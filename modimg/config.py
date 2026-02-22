@@ -37,7 +37,7 @@ def load_dotenv(path: str, *, override: bool | None = None) -> list[str]:
     loaded = []
     if override is None:
         override = (os.getenv("DOTENV_OVERRIDE", "0").strip() == "1")
-
+        
     try:
         if not os.path.exists(path):
             return loaded
@@ -60,31 +60,39 @@ def load_dotenv_candidates() -> tuple[str | None, list[str]]:
     base = os.path.dirname(os.path.abspath(__file__))
     # package file: modimg/config.py -> project root is parent of modimg
     root = os.path.dirname(base)
-    candidates = [os.path.join(root, ".env"), os.path.join(root, ".env.txt")]
-    used = None
+
+    env_path = os.path.join(root, ".env")
+    env_txt_path = os.path.join(root, ".env.txt")
+    example_path = os.path.join(root, ".env.example")
+
+    used: str | None = None
     loaded_keys: list[str] = []
-    for p in candidates:
-        keys = load_dotenv(p)
-        if keys:
-            used = p
-            loaded_keys = keys
-            break
+
+    # STRICT: decide by file existence, not by whether keys were loaded
+    if os.path.exists(env_path):
+        used = env_path
+        loaded_keys = load_dotenv(env_path)
+    elif os.path.exists(env_txt_path):
+        used = env_txt_path
+        loaded_keys = load_dotenv(env_txt_path)
+    elif os.path.exists(example_path):
+        used = example_path
+        loaded_keys = load_dotenv(example_path, override=False)
 
     # Helpful debug prints
     if os.getenv("DEBUG", "0").strip() == "1":
+        checked = [env_path, env_txt_path, example_path]
         if used and loaded_keys:
             uniq = ", ".join(sorted(set(loaded_keys)))
             print(f"[dotenv] loaded from {used}: {uniq}")
+        elif used:
+            print(f"[dotenv] found {used} but no keys were loaded (check formatting: KEY=VALUE).")
         else:
-            existing = [p for p in candidates if os.path.exists(p)]
-            if existing:
-                print(f"[dotenv] found {', '.join(existing)} but no keys were loaded (check formatting: KEY=VALUE).")
-            else:
-                print(f"[dotenv] no .env found in project root (checked: {', '.join(candidates)}).")
+            print(f"[dotenv] no env file found in project root (checked: {', '.join(checked)}).")
 
-    if (used is None) and os.path.exists(candidates[1]) and (not os.path.exists(candidates[0])):
-        if os.getenv("DEBUG", "0").strip() == "1":
+        if (not os.path.exists(env_path)) and os.path.exists(env_txt_path):
             print("[dotenv] NOTE: You have .env.txt — rename it to .env so editors/tools behave correctly.")
+
     return used, loaded_keys
 
 # Load .env automatically on import (matches old behavior)
