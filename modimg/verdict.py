@@ -7,6 +7,23 @@ from .types import EngineResult, Verdict
 from .utils import safe_float01
 
 
+def _env_float(name: str, default: float) -> float:
+    raw = os.getenv(name)
+    if raw is None:
+        return float(default)
+    try:
+        return float(str(raw).strip())
+    except Exception:
+        return float(default)
+
+
+def _safe_float(value: object, default: float = 0.0) -> float:
+    try:
+        return float(value)
+    except Exception:
+        return float(default)
+
+
 def compute_verdict(results: List[EngineResult]) -> Verdict:
     """
     Conservative heuristic:
@@ -154,7 +171,7 @@ def compute_verdict(results: List[EngineResult]) -> Verdict:
 
         if r.name == "YOLO-World weapons":
             realistic = sf(s.get("yolo_firearm_realistic", 0.0))
-            y_firearm_thresh = float(os.getenv("YOLO_FIREARM_THRESH", "0.35"))
+            y_firearm_thresh = _env_float("YOLO_FIREARM_THRESH", 0.35)
             if realistic >= y_firearm_thresh:
                 reasons.append(f"YOLO firearm realistic={realistic:.2f}")
                 violence = max(violence, 1.0)
@@ -162,20 +179,20 @@ def compute_verdict(results: List[EngineResult]) -> Verdict:
             # Cutouts/renders often get classified as 'toy'. By default we still treat firearm-like as NOT_OK unless ALLOW_TOY_GUN=1
             toy = sf(s.get("yolo_firearm_toy", 0.0))
             any_firearm = sf(s.get("yolo_firearm", 0.0))
-            toy_thresh = float(os.getenv("YOLO_FIREARM_TOY_THRESH", "0.25"))
+            toy_thresh = _env_float("YOLO_FIREARM_TOY_THRESH", 0.25)
             allow_toy = os.getenv("ALLOW_TOY_GUN", "0").strip().lower() in ("1", "true", "yes", "on")
             if (not allow_toy) and (toy >= toy_thresh or any_firearm >= y_firearm_thresh):
                 reasons.append(f"YOLO firearm-like (toy/uncertain)={max(toy, any_firearm):.2f}")
                 violence = max(violence, 1.0)
 
             danger = sf(s.get("yolo_knife_dangerous", 0.0))
-            y_dknife_thresh = float(os.getenv("YOLO_DANGEROUS_KNIFE_THRESH", "0.35"))
+            y_dknife_thresh = _env_float("YOLO_DANGEROUS_KNIFE_THRESH", 0.35)
             if danger >= y_dknife_thresh:
                 reasons.append(f"YOLO dangerous knife={danger:.2f}")
                 violence = max(violence, 1.0)
 
             knife = sf(s.get("yolo_knife", 0.0))
-            y_knife_thresh = float(os.getenv("YOLO_KNIFE_THRESH", "0.65"))
+            y_knife_thresh = _env_float("YOLO_KNIFE_THRESH", 0.65)
             knife_block_all = os.getenv("YOLO_KNIFE_BLOCK_ALL", "0").strip().lower() in ("1", "true", "yes", "on")
             if knife_block_all and knife >= y_knife_thresh:
                 reasons.append(f"YOLO knife={knife:.2f}")
@@ -197,9 +214,9 @@ def compute_verdict(results: List[EngineResult]) -> Verdict:
             firearm = sf(s.get("weapon_firearm", 0.0))
             firearm_toy = sf(s.get("weapon_firearm_toy", 0.0))
             firearm_gesture = sf(s.get("weapon_firearm_gesture", 0.0))
-            firearm_animated = float(s.get("weapon_firearm_type_animated", 0.0))
+            firearm_animated = _safe_float(s.get("weapon_firearm_type_animated", 0.0))
             realistic_firearm = firearm * (1.0 - max(firearm_toy, firearm_gesture, firearm_animated))
-            se_firearm_thresh = float(os.getenv("SE_FIREARM_THRESH", "0.35"))
+            se_firearm_thresh = _env_float("SE_FIREARM_THRESH", 0.35)
             block_any_firearm = os.getenv("SE_BLOCK_ANY_FIREARM", "0").strip().lower() in ("1","true","yes","on")
             if block_any_firearm and firearm >= se_firearm_thresh:
                 reasons.append(f"Sightengine firearm(any)={firearm:.2f} (toy={firearm_toy:.2f}, gesture={firearm_gesture:.2f}, animated={firearm_animated:.2f})")
@@ -213,7 +230,7 @@ def compute_verdict(results: List[EngineResult]) -> Verdict:
             vio_prob = sf(s.get("violence_prob", 0.0))
             vio_phys = sf(s.get("violence_physical_violence", 0.0))
             vio_firearm_threat = sf(s.get("violence_firearm_threat", 0.0))
-            se_violence_thresh = float(os.getenv("SE_VIOLENCE_THRESH", "0.30"))
+            se_violence_thresh = _env_float("SE_VIOLENCE_THRESH", 0.30)
             if max(vio_prob, vio_phys, vio_firearm_threat) >= se_violence_thresh:
                 reasons.append(
                     f"Sightengine violence: prob={vio_prob:.2f} physical={vio_phys:.2f} firearm_threat={vio_firearm_threat:.2f}"
@@ -223,29 +240,29 @@ def compute_verdict(results: List[EngineResult]) -> Verdict:
             gore_prob = sf(s.get("gore_prob", 0.0))
             gore_max = max(
                 gore_prob,
-                float(s.get("gore_very_bloody", 0.0)),
-                float(s.get("gore_slightly_bloody", 0.0)),
-                float(s.get("gore_serious_injury", 0.0)),
-                float(s.get("gore_superficial_injury", 0.0)),
-                float(s.get("gore_corpse", 0.0)),
-                float(s.get("gore_body_organ", 0.0)),
+                _safe_float(s.get("gore_very_bloody", 0.0)),
+                _safe_float(s.get("gore_slightly_bloody", 0.0)),
+                _safe_float(s.get("gore_serious_injury", 0.0)),
+                _safe_float(s.get("gore_superficial_injury", 0.0)),
+                _safe_float(s.get("gore_corpse", 0.0)),
+                _safe_float(s.get("gore_body_organ", 0.0)),
             )
-            se_gore_thresh = float(os.getenv("SE_GORE_THRESH", "0.20"))
+            se_gore_thresh = _env_float("SE_GORE_THRESH", 0.20)
             if gore_max >= se_gore_thresh:
                 reasons.append(f"Sightengine gore/blood: score={gore_max:.2f} (prob={gore_prob:.2f})")
                 violence = max(violence, 1.0)
 
             offensive_max = sf(s.get("offensive_max", 0.0))
-            se_offensive_thresh = float(os.getenv("SE_OFFENSIVE_THRESH", "0.50"))
+            se_offensive_thresh = _env_float("SE_OFFENSIVE_THRESH", 0.50)
             if offensive_max >= se_offensive_thresh:
                 reasons.append(f"Sightengine offensive symbols: score={offensive_max:.2f}")
                 hate = max(hate, 1.0)
 
             knife = sf(s.get("weapon_knife", 0.0))
-            se_knife_thresh = float(os.getenv("SE_KNIFE_THRESH", "0.65"))
+            se_knife_thresh = _env_float("SE_KNIFE_THRESH", 0.65)
             knife_block_all = os.getenv("SE_KNIFE_BLOCK_ALL", "0").strip().lower() in ("1", "true", "yes", "on")
             knife_ctx = max(vio_prob, vio_phys, vio_firearm_threat, gore_max)
-            knife_ctx_thresh = float(os.getenv("SE_KNIFE_CONTEXT_THRESH", "0.25"))
+            knife_ctx_thresh = _env_float("SE_KNIFE_CONTEXT_THRESH", 0.25)
             if knife >= se_knife_thresh and (knife_block_all or knife_ctx >= knife_ctx_thresh):
                 reasons.append(f"Sightengine knife: score={knife:.2f} ctx={knife_ctx:.2f}")
                 violence = max(violence, 1.0)
@@ -267,8 +284,8 @@ def compute_verdict(results: List[EngineResult]) -> Verdict:
             hate = bump(hate, h, f"OpenAI hate={h:.2f}", 0.50)
 
     # Final decision thresholds (configurable via .env)
-    block_t = float(os.getenv("FINAL_BLOCK_THRESHOLD", "0.85"))
-    review_t = float(os.getenv("FINAL_REVIEW_THRESHOLD", "0.40"))
+    block_t = _env_float("FINAL_BLOCK_THRESHOLD", 0.85)
+    review_t = _env_float("FINAL_REVIEW_THRESHOLD", 0.40)
     label = "OK"
     if nudity >= block_t or violence >= block_t or hate >= block_t:
         label = "BLOCK"
