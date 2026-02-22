@@ -4,6 +4,7 @@ from __future__ import annotations
 import os
 import atexit
 
+
 def _parse_env_line(line: str):
     """Parse a single env line: KEY=VALUE, export KEY=VALUE, set KEY=VALUE."""
     s = line.strip()
@@ -32,12 +33,13 @@ def _parse_env_line(line: str):
         v = v[1:-1]
     return k, v
 
+
 def load_dotenv(path: str, *, override: bool | None = None) -> list[str]:
     """Load a .env file into environment variables. Returns list of loaded keys."""
-    loaded = []
+    loaded: list[str] = []
     if override is None:
         override = (os.getenv("DOTENV_OVERRIDE", "0").strip() == "1")
-        
+
     try:
         if not os.path.exists(path):
             return loaded
@@ -54,6 +56,7 @@ def load_dotenv(path: str, *, override: bool | None = None) -> list[str]:
     except Exception:
         return loaded
     return loaded
+
 
 def load_dotenv_candidates() -> tuple[str | None, list[str]]:
     """Try loading .env next to the entry script. Returns (used_path, loaded_keys)."""
@@ -95,11 +98,13 @@ def load_dotenv_candidates() -> tuple[str | None, list[str]]:
 
     return used, loaded_keys
 
+
 # Load .env automatically on import (matches old behavior)
 _USED_DOTENV_PATH, _LOADED_KEYS = load_dotenv_candidates()
 
 # Reduce noisy TensorFlow logs if OpenNSFW2 loads TF
 os.environ.setdefault("TF_CPP_MIN_LOG_LEVEL", "2")
+
 
 def project_root() -> str:
     """Absolute path of project root (parent of the modimg package)."""
