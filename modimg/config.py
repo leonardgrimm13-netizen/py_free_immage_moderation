@@ -2,7 +2,6 @@
 from __future__ import annotations
 
 import os
-import atexit
 
 
 def _parse_env_line(line: str):
