@@ -7,6 +7,17 @@ from .pipeline import run_on_input
 from .utils import is_image_file, is_url
 from .config import load_dotenv_candidates
 
+
+def _env_int(name: str, default: int) -> int:
+    """Parse integer env vars defensively to avoid CLI crashes on bad values."""
+    raw = os.getenv(name)
+    if raw is None:
+        return default
+    try:
+        return int(str(raw).strip())
+    except Exception:
+        return default
+
 def _select_scores(engine_name: str, scores: Dict[str, Any]) -> List[tuple[str, float]]:
     """
     Reduce noisy score output.
@@ -70,7 +81,7 @@ def _select_scores(engine_name: str, scores: Dict[str, Any]) -> List[tuple[str, 
                     pass
 
         # optionally include strongest remaining signals above a tiny threshold
-        extra_topk = int(os.getenv("SIGHTENGINE_EXTRA_TOPK", "0") or 0)
+        extra_topk = _env_int("SIGHTENGINE_EXTRA_TOPK", 0)
         if extra_topk > 0:
             rest: List[tuple[str, float]] = []
             for k, v in scores.items():
@@ -88,7 +99,7 @@ def _select_scores(engine_name: str, scores: Dict[str, Any]) -> List[tuple[str, 
         return items
 
     # Other engines: keep up to SCORE_MAX_KEYS (default 8), highest first.
-    max_keys = int(os.getenv("SCORE_MAX_KEYS", "8") or 8)
+    max_keys = _env_int("SCORE_MAX_KEYS", 8)
     rest: List[tuple[str, float]] = []
     for k, v in scores.items():
         try:
@@ -153,7 +164,12 @@ def main(argv: List[str] | None = None) -> int:
     ap = argparse.ArgumentParser(description="Moderate an image/GIF or folder with multiple optional engines.")
     ap.add_argument("input", nargs="?", default="", help="Path/dir/URL to moderate")
     ap.add_argument("--no-apis", action="store_true", help="Disable API engines (OpenAI/Sightengine)")
-    ap.add_argument("--sample-frames", type=int, default=int(os.getenv("SAMPLE_FRAMES","12") or 12), help="Max frames to sample from animated images")
+    ap.add_argument(
+        "--sample-frames",
+        type=int,
+        default=_env_int("SAMPLE_FRAMES", 12),
+        help="Max frames to sample from animated images",
+    )
     ap.add_argument("--recursive", action="store_true", help="When input is a directory, recurse")
     ap.add_argument("--json", dest="json_out", default="", help="Write report(s) to JSON file")
     args = ap.parse_args(argv)
