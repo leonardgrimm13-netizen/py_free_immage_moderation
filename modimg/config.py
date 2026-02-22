@@ -70,7 +70,7 @@ def load_dotenv_candidates() -> tuple[str | None, list[str]]:
     used: str | None = None
     loaded_keys: list[str] = []
 
-    # STRICT: decide by file existence, not by whether keys were loaded
+    # STRICT: decide by file existence
     if os.path.exists(env_path):
         used = env_path
         loaded_keys = load_dotenv(env_path)
