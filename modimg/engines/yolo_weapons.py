@@ -3,7 +3,6 @@ from __future__ import annotations
 import os
 from typing import Any, Dict, List, Tuple
 
-from PIL import Image
 
 from ..types import Engine, EngineResult, Frame
 from ..utils import env_int, now_ms, safe_float01

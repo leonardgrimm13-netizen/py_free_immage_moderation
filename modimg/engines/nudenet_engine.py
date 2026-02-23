@@ -4,7 +4,7 @@ import os
 from typing import Any, List, Tuple, Optional
 from PIL import Image
 
-from ..types import Engine, EngineResult, Frame
+from ..types import Engine, EngineResult
 from ..utils import now_ms
 
 class NudeNetEngine(Engine):

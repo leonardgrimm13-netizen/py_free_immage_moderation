@@ -1,7 +1,8 @@
 from __future__ import annotations
 
-import os, tempfile, traceback
-from typing import Any, Dict, List, Optional, Tuple
+import os
+import traceback
+from typing import Any, Dict, List, Optional
 
 from .types import EngineResult, Verdict, Frame
 from .utils import is_url, download_url_to_temp, now_ms

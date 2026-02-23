@@ -1,7 +1,17 @@
 """Small utilities shared across the project."""
 from __future__ import annotations
 
-import os, io, json, math, re, mimetypes, tempfile, time, ssl, urllib.parse, urllib.request
+import os
+import io
+import json
+import math
+import re
+import mimetypes
+import tempfile
+import time
+import ssl
+import urllib.parse
+import urllib.request
 from typing import Any, Tuple
 from PIL import Image
 

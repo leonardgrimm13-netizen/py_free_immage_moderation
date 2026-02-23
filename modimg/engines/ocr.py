@@ -1,9 +1,9 @@
 from __future__ import annotations
 
-import os, re
+import os
+import re
 from typing import List, Tuple
 
-from PIL import Image
 
 from ..types import Engine, EngineResult, Frame
 from ..utils import env_int, now_ms
