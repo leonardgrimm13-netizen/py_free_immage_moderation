@@ -112,7 +112,7 @@ def compute_verdict(results: List[EngineResult]) -> Verdict:
 
     # Aggregate
     for r in results:
-        if r.status != "ok":
+        if (r.status or "").lower() != "ok":
             continue
         s = r.scores or {}
         if r.name == "pHash allowlist":
