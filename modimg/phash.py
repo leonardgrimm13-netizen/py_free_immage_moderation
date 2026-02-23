@@ -7,7 +7,6 @@ from typing import Dict, List, Tuple, Optional
 import numpy as np
 from PIL import Image
 
-from .utils import env_int
 
 # --- pHash helpers (optional ImageHash, otherwise numpy DCT implementation) ---
 try:

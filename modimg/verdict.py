@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import os
-from typing import List
+from typing import List, Optional
 
 from .types import EngineResult, Verdict
 from .utils import safe_float01

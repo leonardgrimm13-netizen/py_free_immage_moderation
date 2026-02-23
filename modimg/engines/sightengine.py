@@ -1,12 +1,11 @@
 from __future__ import annotations
 
-import os, json
+import os
+import json
 from typing import Any, Dict, List, Optional, Tuple
 
-import requests
-
 from ..types import Engine, EngineResult, Frame, mk_skipped
-from ..utils import now_ms, safe_float01
+from ..utils import now_ms
 
 
 class SightengineEngine(Engine):
@@ -281,4 +280,3 @@ class SightengineEngine(Engine):
             details={"per_frame": per_frame, "frames_used": [int(fr.idx) for fr in use_frames], "models": self.models},
             took_ms=now_ms() - start,
         )
-

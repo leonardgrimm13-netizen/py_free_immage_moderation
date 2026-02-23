@@ -1,9 +1,9 @@
 """Dataclasses and engine base types."""
 from __future__ import annotations
 
-import dataclasses, json
+import dataclasses
 from dataclasses import dataclass
-from typing import Any, Dict, List, Optional, Tuple, Protocol
+from typing import Any, Dict, List, Optional, Tuple
 
 from PIL import Image
 
