@@ -4,14 +4,14 @@ A flexible Python project for **image and GIF moderation** with multiple engines
 **Languages:** **English** | [Deutsch](README.de.md)
 
 ## Contents
-- [Features](#-features)
-- [Project structure](#-project-structure)
-- [Installation](#-installation)
-- [Quickstart](#-quickstart)
-- [Verification](#-verification)
-- [Important configuration (.env)](#-important-configuration-env)
-- [Result logic (OK / REVIEW / BLOCK)](#-result-logic-ok--review--block)
-- [Tips for running](#-tips-for-running)
+- [Features](#features)
+- [Project structure](#project-structure)
+- [Installation](#installation)
+- [Quickstart](#quickstart)
+- [Verification](#verification)
+- [Important configuration (.env)](#important-configuration-env)
+- [Result logic (OK / REVIEW / BLOCK)](#result-logic-ok--review--block)
+- [Tips for running](#tips-for-running)
 
 ---
 
