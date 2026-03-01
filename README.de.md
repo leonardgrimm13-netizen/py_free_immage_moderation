@@ -1,40 +1,40 @@
-# py_free_immage_moderation
-A flexible Python project for **image and GIF moderation** with multiple engines (local + API), pHash lists, and clear CLI output.
+# py_free_image_moderation
+Ein flexibles Python-Projekt zur **Bild- und GIF-Moderation** mit mehreren Engines (lokal + API), pHash-Listen und klarer CLI-Ausgabe.
 
-**Languages:** **English** | [Deutsch](README.de.md)
+**Sprachen:** [English](README.md) | **Deutsch**
 
-## Contents
+## Inhalt
 - [Features](#-features)
-- [Project structure](#-project-structure)
+- [Projektstruktur](#-projektstruktur)
 - [Installation](#-installation)
-- [Quickstart](#-quickstart)
-- [Verification](#-verification)
-- [Important configuration (.env)](#-important-configuration-env)
-- [Result logic (OK / REVIEW / BLOCK)](#-result-logic-ok--review--block)
-- [Tips for running](#-tips-for-running)
+- [Schnellstart](#-schnellstart)
+- [Verifikation](#-verifikation)
+- [Wichtige Konfiguration (.env)](#-wichtige-konfiguration-env)
+- [Ergebnislogik (OK / REVIEW / BLOCK)](#-ergebnislogik-ok--review--block)
+- [Tipps für den Betrieb](#-tipps-für-den-betrieb)
 
 ---
 
 ## ✨ Features
-- **Multi-stage moderation** for single images, GIFs, directories, and URLs
-- **pHash allowlist/blocklist** for very fast short-circuit decisions
-- **OCR text check** (e.g., against text blocklists)
-- Combinable engines:
+- **Mehrstufige Moderation** für einzelne Bilder, GIFs, Verzeichnisse und URLs
+- **pHash Allowlist/Blocklist** für sehr schnelle Short-Circuit-Entscheidungen
+- **OCR-Text-Check** (z. B. gegen Text-Blocklisten)
+- Kombinierbare Engines:
   - `OpenNSFW2`
   - `NudeNet`
-  - `YOLO` (weapon detection)
-  - `OpenAI Moderation` (optional via API key)
-  - `Sightengine` (optional via API credentials)
-- **GIF handling** with configurable frame sampling
-- **JSON export** for further processing in pipelines
-- **Conservative verdict logic** with clear, traceable reasons
+  - `YOLO` (Waffen-Erkennung)
+  - `OpenAI Moderation` (optional per API-Key)
+  - `Sightengine` (optional per API-Credentials)
+- **GIF-Handling** mit konfigurierbarem Frame-Sampling
+- **JSON-Export** für Weiterverarbeitung in Pipelines
+- **Konservative Verdict-Logik** mit nachvollziehbaren Gründen
 
 ---
 
-## 📁 Project structure
+## 📁 Projektstruktur
 ```text
 py_free_immage_moderation/
-├── moderate_image.py         # Entry point (CLI wrapper)
+├── moderate_image.py         # Einstiegspunkt (CLI-Wrapper)
 ├── requirements.txt
 ├── requirements_api.txt
 ├── data/
@@ -42,21 +42,21 @@ py_free_immage_moderation/
 │   ├── phash_blocklist.txt
 │   └── ocr_text_blocklist.txt
 └── modimg/
-    ├── cli.py               # Args, output, JSON export
-    ├── pipeline.py          # Flow & engine orchestration
-    ├── verdict.py           # Final decision logic
-    ├── frames.py            # Image/GIF frame loading
-    ├── phash.py             # pHash utilities
-    ├── config.py            # .env loading
-    └── engines/             # Individual moderation engines
+    ├── cli.py               # Argumente, Ausgabe, JSON-Export
+    ├── pipeline.py          # Ablauf & Engine-Orchestrierung
+    ├── verdict.py           # Finale Bewertungslogik
+    ├── frames.py            # Bild/GIF-Frame-Laden
+    ├── phash.py             # pHash-Utilities
+    ├── config.py            # .env-Loading
+    └── engines/             # Einzelne Moderations-Engines
 ```
 
 ---
 
 ## ⚙️ Installation
-> Recommended: Python **3.11+** in a virtual environment.
+> Empfohlen: Python **3.11+** in einer virtuellen Umgebung.
 
-### 1) Repository and venv
+### 1) Repository und venv
 ```bash
 git clone https://github.com/leonardgrimm13-netizen/py_free_immage_moderation.git
 cd py_free_immage_moderation
@@ -66,7 +66,7 @@ source .venv/bin/activate
 # Windows: .venv\Scripts\activate
 ```
 
-### 2) Install options
+### 2) Installationsoptionen
 
 #### A) Offline/Local
 ```bash
@@ -74,7 +74,7 @@ pip install --upgrade pip
 pip install -r requirements.txt
 ```
 
-Includes the local runtime + engine dependencies (without API clients):
+Enthält die lokalen Laufzeit- und Engine-Abhängigkeiten (ohne API-Clients):
 - `Pillow`
 - `numpy`
 - `ImageHash`
@@ -83,70 +83,70 @@ Includes the local runtime + engine dependencies (without API clients):
 - `ultralytics`
 - `pytesseract`
 
-This enables the local pipeline including pHash and `--no-apis`.
+Damit funktioniert die lokale Pipeline inkl. pHash und `--no-apis`.
 
-#### B) With APIs
+#### B) Mit APIs
 ```bash
 pip install -r requirements_api.txt
 ```
 
-Includes everything from `requirements.txt` plus API clients:
-- `openai` (OpenAI moderation)
+Enthält alles aus `requirements.txt` plus API-Clients:
+- `openai` (OpenAI-Moderation)
 - `sightengine` (Sightengine API)
 
-### 3) Dev/Test dependencies
+### 3) Dev/Test-Abhängigkeiten
 ```bash
 pip install -r requirements-dev.txt
 ```
 
-Includes e.g. `pytest` for local test runs.
+Enthält z. B. `pytest` für lokale Testläufe.
 
-### 5) Optional system dependency for OCR
-For OCR you typically need a local Tesseract install:
+### 5) Optionale System-Abhängigkeit für OCR
+Für OCR wird in der Regel eine lokale Tesseract-Installation benötigt:
 - Ubuntu/Debian: `sudo apt install tesseract-ocr`
 - macOS (Homebrew): `brew install tesseract`
 
 ---
 
-## 🚀 Quickstart
+## 🚀 Schnellstart
 
-### Check a single image
+### Einzelnes Bild prüfen
 ```bash
-python moderate_image.py /path/to/image.jpg
+python moderate_image.py /pfad/zum/bild.jpg
 ```
 
-### Check a GIF (frame sampling)
+### GIF prüfen (Frame-Sampling)
 ```bash
-python moderate_image.py /path/to/file.gif --sample-frames 12
+python moderate_image.py /pfad/zur/datei.gif --sample-frames 12
 ```
 
-### Check a URL
+### URL prüfen
 ```bash
 python moderate_image.py "https://example.com/image.jpg"
 ```
 
-### Check a directory
+### Verzeichnis prüfen
 ```bash
 python moderate_image.py ./images --recursive
 ```
 
-### Without external APIs (base install is enough)
+### Ohne externe APIs (Basisinstallation ausreichend)
 ```bash
 python moderate_image.py ./images --recursive --no-apis
 ```
 
-### Write a JSON report
+### JSON-Report schreiben
 ```bash
 python moderate_image.py ./images --recursive --json moderation_report.json
 ```
 
-**Exit codes:**
-- `0` = all results are `OK`
-- `2` = at least one result is not `OK`
+**Exit Codes:**
+- `0` = alle Ergebnisse `OK`
+- `2` = mindestens ein Ergebnis nicht `OK`
 
 ---
 
-## ✅ Verification
+## ✅ Verifikation
 ```bash
 python -m compileall -q .
 pytest -q
@@ -154,21 +154,21 @@ python moderate_image.py --help
 python moderate_image.py --no-apis
 ```
 
-Expected behavior (short):
-- `python -m compileall -q .` → exit code `0` if code is syntactically valid.
-- `pytest -q` → exit code `0` if tests pass, otherwise non-zero.
-- `python moderate_image.py --help` → exit code `0` and shows CLI help.
-- `python moderate_image.py --no-apis` → exit code `0` (only `OK`) or `2` (at least one `REVIEW/BLOCK`).
+Erwartetes Verhalten (kurz):
+- `python -m compileall -q .` → Exitcode `0` bei syntaktisch gültigem Code.
+- `pytest -q` → Exitcode `0` bei erfolgreichen Tests, sonst ungleich `0`.
+- `python moderate_image.py --help` → Exitcode `0` und Anzeige der CLI-Hilfe.
+- `python moderate_image.py --no-apis` → Exitcode `0` (nur `OK`) oder `2` (mindestens ein `REVIEW/BLOCK`).
 
-Optional engines may be missing; they must show up as `skipped`/`disabled` in output instead of aborting execution.
+Optionale Engines dürfen fehlen; sie müssen in der Ausgabe sauber als `skipped`/`disabled` erscheinen, statt die Ausführung abzubrechen.
 
 ---
 
-## 🔧 Important configuration (.env)
-The project automatically loads `.env` from the project root. Example:
+## 🔧 Wichtige Konfiguration (.env)
+Das Projekt lädt automatisch `.env` aus dem Projekt-Root. Beispiel:
 
 ```env
-# API engines
+# API-Engines
 OPENAI_API_KEY=...
 SIGHTENGINE_USER=...
 SIGHTENGINE_SECRET=...
@@ -182,31 +182,31 @@ ENGINE_ERROR_POLICY=review
 OCR_ENABLE=1
 OCR_LANG=eng
 
-# pHash auto-learn
+# pHash Auto-Learn
 PHASH_AUTO_LEARN_ENABLE=0
 PHASH_AUTO_ALLOW_APPEND=1
 PHASH_AUTO_BLOCK_APPEND=1
 ```
 
-Useful toggles:
-- `OPENAI_DISABLE=1` / omit `SIGHTENGINE_*` if you don’t use API engines
-- `PHASH_ALLOW_DISABLE=1` or `PHASH_BLOCK_DISABLE=1` to disable them selectively
-- `SCORE_VERBOSE=1` for more verbose engine scores
+Nützliche Schalter:
+- `OPENAI_DISABLE=1` / `SIGHTENGINE_*` weglassen, wenn API-Engines nicht genutzt werden
+- `PHASH_ALLOW_DISABLE=1` oder `PHASH_BLOCK_DISABLE=1` zum gezielten Abschalten
+- `SCORE_VERBOSE=1` für ausführlichere Engine-Scores
 
 ---
 
-## 🧠 Result logic (OK / REVIEW / BLOCK)
-- **pHash short-circuit** can decide early:
-  - allowlist hit → `OK`
-  - blocklist hit → `BLOCK`
-- Then the remaining engines are aggregated
-- `verdict.py` condenses signals (nudity, violence, hate) into the final decision
-- Error behavior can be controlled via `ENGINE_ERROR_POLICY` (`ignore`, `review`, `block`)
+## 🧠 Ergebnislogik (OK / REVIEW / BLOCK)
+- **pHash-Short-Circuit** kann früh entscheiden:
+  - Allowlist-Treffer → direkt `OK`
+  - Blocklist-Treffer → direkt `BLOCK`
+- Danach werden die restlichen Engines aggregiert
+- `verdict.py` verdichtet Signale (Nudity, Violence, Hate) zu finalem Urteil
+- Fehlerverhalten lässt sich über `ENGINE_ERROR_POLICY` steuern (`ignore`, `review`, `block`)
 
 ---
 
-## 🛠️ Tips for running
-- Start with `--no-apis` to verify the local pipeline and performance first.
-- Use `--json` if results should be processed in CI/CD or backend services.
-- Maintain `data/phash_allowlist.txt` and `data/phash_blocklist.txt` regularly for stable decisions on recurring content.
-- For GIFs, increase `--sample-frames` if problematic content appears only in a few frames.
+## 🛠️ Tipps für den Betrieb
+- Starte zuerst mit `--no-apis`, um lokale Pipeline und Performance zu prüfen.
+- Nutze `--json`, wenn Ergebnisse in CI/CD oder Backend-Services weiterverarbeitet werden sollen.
+- Pflege `data/phash_allowlist.txt` und `data/phash_blocklist.txt` regelmäßig für stabile Entscheidungen bei wiederkehrendem Content.
+- Bei GIFs ggf. `--sample-frames` erhöhen, wenn problematischer Content nur in einzelnen Frames auftaucht.
