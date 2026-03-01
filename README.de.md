@@ -2,6 +2,8 @@
 
 Ein flexibles Python-Projekt zur **Bild- und GIF-Moderation** mit mehreren Engines (lokal + API), pHash-Listen und klarer CLI-Ausgabe.
 
+**Sprachen:** [English](README.md) | **Deutsch**
+
 ## Inhalt
 - [Features](#-features)
 - [Projektstruktur](#-projektstruktur)
