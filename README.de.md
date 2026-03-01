@@ -33,7 +33,7 @@ Ein flexibles Python-Projekt zur **Bild- und GIF-Moderation** mit mehreren Engin
 
 ## 📁 Projektstruktur
 ```text
-py_free_immage_moderation/
+py_free_image_moderation/
 ├── moderate_image.py         # Einstiegspunkt (CLI-Wrapper)
 ├── requirements.txt
 ├── requirements_api.txt
@@ -58,8 +58,8 @@ py_free_immage_moderation/
 
 ### 1) Repository und venv
 ```bash
-git clone https://github.com/leonardgrimm13-netizen/py_free_immage_moderation.git
-cd py_free_immage_moderation
+git clone https://github.com/leonardgrimm13-netizen/py_free_image_moderation.git
+cd py_free_image_moderation
 
 python -m venv .venv
 source .venv/bin/activate
