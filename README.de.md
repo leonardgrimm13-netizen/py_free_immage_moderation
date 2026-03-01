@@ -4,14 +4,14 @@ Ein flexibles Python-Projekt zur **Bild- und GIF-Moderation** mit mehreren Engin
 **Sprachen:** [English](README.md) | **Deutsch**
 
 ## Inhalt
-- [Features](#-features)
-- [Projektstruktur](#-projektstruktur)
-- [Installation](#-installation)
-- [Schnellstart](#-schnellstart)
-- [Verifikation](#-verifikation)
-- [Wichtige Konfiguration (.env)](#-wichtige-konfiguration-env)
-- [Ergebnislogik (OK / REVIEW / BLOCK)](#-ergebnislogik-ok--review--block)
-- [Tipps für den Betrieb](#-tipps-für-den-betrieb)
+- [Features](#features)
+- [Projektstruktur](#projektstruktur)
+- [Installation](#installation)
+- [Schnellstart](#schnellstart)
+- [Verifikation](#verifikation)
+- [Wichtige Konfiguration (.env)](#wichtige-konfiguration-env)
+- [Ergebnislogik (OK / REVIEW / BLOCK)](#ergebnislogik-ok--review--block)
+- [Tipps für den Betrieb](#tipps-für-den-betrieb)
 
 ---
 
